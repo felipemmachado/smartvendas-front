@@ -11,7 +11,7 @@
   "dependencies": {
     "@quasar/extras": "^1.10.4",
     "accents": "^1.0.2",
-    "axios": "^0.21.1",
+    "axios": "^1.6.0",
     "caniuse-lite": "^1.0.30001228",
     "chart.js": "^2.9.4",
     "chartjs-plugin-datalabels": "^0.6.0",
@@ -28,7 +28,7 @@
     "vue-chartjs": "^3.5.1",
     "vue-router": "^3.5.1",
     "vuex": "^3.6.2",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.17.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.2.0",
