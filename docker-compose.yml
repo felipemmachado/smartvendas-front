@@ -1,10 +1,10 @@
-version: '3'
+version: '3.8'
 services:
-
-  smart-vendas-front:
-    container_name: "__CONTAINER_NAME__"
-    image: "__IMAGE_NAME__"
+  DOCKER_SERVER_NAME:
+    restart: always
+    container_name: "DOCKER_CONTAINER_NAME"
+    image: "DOCKER_IMAGE_NAME"
     environment:
-      - VUE_APP_API=__API_ROUTER__
+      - VUE_APP_API=API_ROUTER
     ports:
-      - "__CONTAINER_PORT__"
+      - "DOCKER_PORT"
