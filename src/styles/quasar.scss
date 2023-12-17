@@ -1,0 +1,106 @@
+@import "./quasar.variables.scss";
+@import "~quasar-styl";
+// @import '~quasar-addon-styl';
+
+.icone-correcao {
+  margin-top: -0.2em;
+}
+
+/*
+ * disable auto-zoom on iphone input field focus 
+ * http://www.456bereastreet.com/archive/201212/ios_webkit_browsers_and_auto-zooming_form_controls/
+*/
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+.print {
+  display: none;
+}
+
+/* disable auto-zoom on iphone input field focus */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  select:focus,
+  textarea:focus,
+  input:focus {
+    font-size: 16px;
+  }
+}
+
+@media print {
+  body {
+    background-color: #fff !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print {
+    display: inline !important;
+  }
+
+  .table-print-16px {
+    background-color: #fff !important;
+
+    th {
+      font-size: 16px !important;
+    }
+
+    td {
+      font-size: 16px !important;
+    }
+  }
+
+  .td-relatorio {
+    border-bottom: 1px solid #ccc !important;
+  }
+
+  .q-card {
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #222 !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .table {
+    min-width: auto !important;
+  }
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 600px;
+}
+
+table {
+  border-collapse: collapse !important;
+}
+
+.td-relatorio {
+  border-bottom: 1px solid #ccc;
+}
+
+body.body--dark {
+  .td-relatorio {
+    border-bottom: 1px solid #333;
+  }
+}
+
+.q-dark {
+  color: #eee;
+}
+
+.q-field--dark .q-field__native,
+.q-field--dark .q-field__prefix,
+.q-field--dark .q-field__suffix,
+.q-field--dark .q-field__input {
+  color: #eee !important;
+}

@@ -1,0 +1,119 @@
+# pipeline to deploy front-end, front-end and docker-compose to develop, staging (homlog or QAS) and production
+pipelines:
+  branches:
+    release/*:
+      - step:
+          runs-on:
+            - self.hosted
+            - linux
+          name: Deploy to release
+          deployment: release
+          script:
+            - apt-get update && apt-get install --yes zip
+            - cd /opt/atlassian/pipelines/agent/build
+            - sed -i "s|\__API_ROUTER__|$API_ROUTER|" docker-compose.yml
+            - sed -i "s|\__CONTAINER_NAME__|$CONTAINER_NAME|" docker-compose.yml
+            - sed -i "s|\__IMAGE_NAME__|$IMAGE_NAME|" docker-compose.yml
+            - sed -i "s|\__CONTAINER_PORT__|$CONTAINER_PORT|" docker-compose.yml
+            - zip -r front-end.zip .
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'rm -Rf $APP_PATH'
+                  DEBUG: 'true' 
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'mkdir -p $APP_PATH'
+                  DEBUG: 'true' 
+            - pipe: atlassian/sftp-deploy:0.3.1
+              variables:
+                USER: '$HOST_USER'
+                SERVER: '$HOST_NAME'
+                REMOTE_PATH: '$APP_PATH'
+                LOCAL_PATH: 'front-end.zip'
+                DEBUG: 'true'
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'cd $APP_PATH && unzip -o front-end.zip && rm front-end.zip'
+                  DEBUG: 'true' 
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'cd $APP_PATH && docker build ./ --tag $IMAGE_NAME'
+                  DEBUG: 'true'
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'cd $APP_PATH && docker compose -f docker-compose.yml up --build --force-recreate -d && yes | docker image prune --all'
+                  DEBUG: 'true'
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'rm -Rf $APP_PATH'
+                  DEBUG: 'true'
+    master:
+      - step:
+          runs-on:
+            - self.hosted
+            - linux
+          name: Deploy to production
+          deployment: production
+          script:
+            - apt-get update && apt-get install --yes zip
+            - cd /opt/atlassian/pipelines/agent/build
+            - sed -i "s|\__API_ROUTER__|$API_ROUTER|" docker-compose.yml
+            - sed -i "s|\__CONTAINER_NAME__|$CONTAINER_NAME|" docker-compose.yml
+            - sed -i "s|\__IMAGE_NAME__|$IMAGE_NAME|" docker-compose.yml
+            - sed -i "s|\__CONTAINER_PORT__|$CONTAINER_PORT|" docker-compose.yml
+            - zip -r front-end.zip .
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'rm -Rf $APP_PATH'
+                  DEBUG: 'true' 
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'mkdir -p $APP_PATH'
+                  DEBUG: 'true' 
+            - pipe: atlassian/sftp-deploy:0.3.1
+              variables:
+                USER: '$HOST_USER'
+                SERVER: '$HOST_NAME'
+                REMOTE_PATH: '$APP_PATH'
+                LOCAL_PATH: 'front-end.zip'
+                DEBUG: 'true'
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'cd $APP_PATH && unzip -o front-end.zip && rm front-end.zip'
+                  DEBUG: 'true' 
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'cd $APP_PATH && docker build ./ --tag $IMAGE_NAME'
+                  DEBUG: 'true'
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'cd $APP_PATH && docker compose -f docker-compose.yml up --build --force-recreate -d && yes | docker image prune --all'
+                  DEBUG: 'true'
+            - pipe: atlassian/ssh-run:0.2.2
+              variables:
+                  SSH_USER: '$HOST_USER'
+                  SERVER: '$HOST_NAME'
+                  COMMAND: 'rm -Rf $APP_PATH'
+                  DEBUG: 'true' 

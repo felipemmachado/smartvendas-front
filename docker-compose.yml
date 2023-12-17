@@ -1,0 +1,10 @@
+version: '3'
+services:
+
+  smart-vendas-front:
+    container_name: "__CONTAINER_NAME__"
+    image: "__IMAGE_NAME__"
+    environment:
+      - VUE_APP_API=__API_ROUTER__
+    ports:
+      - "__CONTAINER_PORT__"
