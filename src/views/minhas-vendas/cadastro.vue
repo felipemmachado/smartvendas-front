@@ -195,9 +195,9 @@
             @click="excluir" />
 
           <q-btn type="submit" :disable="salvando ||
-          verificandoAgenda ||
-          verificandoDataUnidade ||
-          verificandoDataReagendamento" :loading="salvando" label="salvar" color="primary" class="float-right"
+            verificandoAgenda ||
+            verificandoDataUnidade ||
+            verificandoDataReagendamento" :loading="salvando" label="salvar" color="primary" class="float-right"
             icon="check" />
         </div>
       </div>
@@ -337,7 +337,10 @@ export default {
       this.dataInicial = data
       this.form.data = data
       this.form.hora = hora
-      const tipoVenda = this.tiposVendas.find((x) => x.id === this.venda.idVendaAgendaTipo)
+      let tipoVenda = this.tiposVendas.find((x) => x.id === this.venda.idVendaAgendaTipo)
+      if (!tipoVenda) {
+        tipoVenda = { id: this.venda.idVendaAgendaTipo, descricao: this.venda.vendaAgendaTipo }
+      }
       this.form.tipo = tipoVenda
       this.form.nomeTipo = this.venda.vendaAgendaTipo
       this.form.nomeVendaComissao = this.venda.nomeVendaComissao
