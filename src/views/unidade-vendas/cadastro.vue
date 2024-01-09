@@ -51,9 +51,20 @@
                 readonly
                 style="margin-bottom: 2em;"
                 :unmasked-value="true"
-                type="text"
-              />
+                type="text">
+                <template v-slot:append>
+                  <q-btn
+                    v-if="editar"
+                    color="positive"
+                    @click="vaiParaWhatsApp">
+                    <img
+                      style="width:1.8em"
+                      src="../../assets/imagens/whatsapp.svg">
+                  </q-btn>
+                </template>
+              </q-input>
             </div>
+
           </div>
           <div class="row">
             <div class="col-xs-8 q-pr-md">
@@ -480,6 +491,15 @@ export default {
         this.$refs.appCadastroObservacao.carregaObservacao()
       }
     },
+
+    vaiParaWhatsApp() {
+      const numero = `55${this.form.telefone.replace(/\D/g, '')}`
+      const a = document.createElement('a')
+      a.href = `https://api.whatsapp.com/send?phone=${numero}`
+      a.target = '_blank'
+      a.click()
+    },
+
   },
 }
 </script>
