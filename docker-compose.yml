@@ -8,3 +8,7 @@ services:
       - VUE_APP_API=API_ROUTER
     ports:
       - "DOCKER_PORT"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
