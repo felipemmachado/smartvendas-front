@@ -1,7 +1,7 @@
 ### Multi Stage Build ###
 
 ### Estágio 1 - Obter o source e gerar o build ###
-FROM node:lts-slim AS builder
+FROM node:16-alpine AS builder
 #ENV NODE_ENV=production
 
 WORKDIR /app
@@ -11,7 +11,7 @@ RUN npm install
 RUN npm run build
 
 # # # ### Estágio 2 - Subir o source para o servidor NGINX com a app ###
-FROM nginx:mainline-alpine3.23-slim 
+FROM nginx:mainline-alpine3.23-slim
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY ./entrypoint.sh /usr/share/nginx/
