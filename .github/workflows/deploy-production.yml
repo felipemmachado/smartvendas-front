@@ -6,7 +6,7 @@ on:
 
   push:
     branches: [main]
-  
+
   workflow_dispatch:
 
 jobs:
@@ -33,9 +33,9 @@ jobs:
 
     environment:
       name: production
-    
+
     permissions:
-        contents: write
+      contents: write
 
     steps:
       - name: Git checkout
@@ -44,23 +44,23 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Get Version from package.json
         id: get_version
         run: echo "::set-output name=version::$(node -p "require('./package.json').version")"
-    
+
       - name: Create Git Tag
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-  
+
           # Replace "v1.0.0" with the actual version number
           git tag -a "v${{ steps.get_version.outputs.version }}" -m "Release version ${{ steps.get_version.outputs.version }}"
-  
+
       - name: Push Git Tag
         run: git push origin "v${{ steps.get_version.outputs.version }}"
-      
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -72,13 +72,31 @@ jobs:
         with:
           push: true
           tags: felipemmachado28/smartvendas-front:v${{ steps.get_version.outputs.version }}
-    
+
       - name: Build and push Docker image latest
         uses: docker/build-push-action@v4
         with:
           push: true
           tags: felipemmachado28/smartvendas-front:latest
 
+      - name: replace envs
+        run: |
+          sed -i "s|API_ROUTER|${{ vars.API_ROUTER }}|" docker-compose.yml
+
+          sed -i "s|DOCKER_SERVER_NAME|smartvendas-front|" docker-compose.yml
+          sed -i "s|DOCKER_CONTAINER_NAME|smartvendas-front-prd|" docker-compose.yml
+          sed -i "s|DOCKER_IMAGE_NAME|felipemmachado28/smartvendas-front:latest|" docker-compose.yml
+          sed -i "s|DOCKER_PORT|${{ vars.EXTERNAL_PORT }}:80|" docker-compose.yml
+
+      - name: copy docker-compose.yml
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "docker-compose.yml"
+          target: "/home/smart-prod"
 
   deploy-production:
     name: "Deploy Production"
